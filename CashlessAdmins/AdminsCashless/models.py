@@ -47,7 +47,7 @@ class CardHolder(models.Model):
         if not self.pk:
             #If this is a new Administrator, add them to the Administrator Group
             group = Group.objects.get(name='cardholders')
-            self.user.groups.add(group)
+            self.group = group
         super().save(*args, **kwargs)
 
 class Merchant(models.Model):
