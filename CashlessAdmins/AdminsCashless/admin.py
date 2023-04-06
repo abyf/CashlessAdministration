@@ -13,8 +13,20 @@ class AdministratorAdmin(admin.ModelAdmin):
 class CardHolderAdmin(admin.ModelAdmin):
     list_display = ('id','name','phone','email','card_id','qr_code','balance','alias','created_at', 'modified_at')
 
+    def get_list_display(self,request):
+        if request.user.is_superuser:
+            return('id','name','phone','email','card_id','qr_code','balance','alias','created_at', 'modified_at')
+        else:
+            return('id','name','phone','email','balance','created_at', 'modified_at')
+
 class MerchantAdmin(admin.ModelAdmin):
     list_display = ('id','name','phone','email','reader_id','wallet_id','alias','balance','created_at', 'modified_at')
+
+    def get_list_display(self,request):
+        if request.user.is_superuser:
+            return('id','name','phone','email','reader_id','wallet_id','alias','balance','created_at', 'modified_at')
+        else:
+            return('id','name','phone','email','balance','created_at', 'modified_at')
 
 class TransactionAdmin(admin.ModelAdmin):
     list_display = ['id','transaction_type','cardholder_alias','qr_code','card_id','merchant_alias','amount','created_at']

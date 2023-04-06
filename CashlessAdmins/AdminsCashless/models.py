@@ -14,6 +14,8 @@ class Manager(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     modified_at = models.DateTimeField(auto_now=True)
 
+    def __str__(self):
+        return "{username}:{balance}".format(username=self.username,balance=self.balance)
 
 class Administrator(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='administrators')
@@ -100,7 +102,6 @@ class Merchant(models.Model):
             self.alias = new_alias
         super().save(*args, **kwargs)
 
-
 class Transaction(models.Model):
     TRANSACTION_TYPES = [('load','Load'),('withdraw','Withdraw')]
     cardholder_alias = models.CharField(max_length=8,null=True,blank=True)
@@ -136,3 +137,21 @@ class Transaction(models.Model):
     def save(self,*args,**kwargs):
         self.full_clean()
         super().save(*args,**kwargs)
+
+class Payment(models.Model):
+    card_id = models.CharField(max_length=120, blank=True)
+    qr_code = models.ForeignKey(CardHolder, on_delete=models.CASCADE, null=True, blank=True)
+    wallet_id = models.ForeignKey(Merchant,on_delete=models.CASCADE,to_field='wallet_id')
+    amount = models.DecimalField(max_digits=250,decimal_places=2,default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+    modified_at = models.DateTimeField(auto_now=True)
+
+    def get_cardholder(self):
+        try:
+            return CardHolder.objects.get(card_id=self.card_id)
+        except CardHolder.DoesNotExist:
+            return CardHolder.objects.get(qr_code=self.qr_code)
+
+    def __str__(self):
+        cardholder = self.get_cardholder()
+        return f"{self.amount} was paid to {self.wallet_id.name} by {self.CardHolder.name}"
