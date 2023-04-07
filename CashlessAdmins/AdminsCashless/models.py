@@ -3,6 +3,7 @@ import uuid,random,string
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User, Group
 
+
 class Manager(models.Model):
     username = models.CharField(max_length=120, unique=True)
     name = models.CharField(max_length=120)
@@ -143,6 +144,7 @@ class Payment(models.Model):
     qr_code = models.ForeignKey(CardHolder, on_delete=models.CASCADE, null=True, blank=True)
     wallet_id = models.ForeignKey(Merchant,on_delete=models.CASCADE,to_field='wallet_id')
     amount = models.DecimalField(max_digits=250,decimal_places=2,default=0)
+    commission_fee = models.DecimalField(max_digits=250,decimal_places=2,default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     modified_at = models.DateTimeField(auto_now=True)
 
